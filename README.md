@@ -1,2 +1,2 @@
-# clique_problem
-Algorithm to resolve clique problem for graphs
+# Clique Problem
+Algorithm in C to resolve the clique problem in graphs. 
