@@ -1,7 +1,6 @@
 #include "stdio.h"
 #include "stdlib.h"
-
-#include <ctime>
+#include "time.h"
 
 #define DEBUG
 
@@ -47,6 +46,8 @@ int read_instance(char* filename, Graph* graph){
 		graph->adjacency[src][dest] = 1;
 	}
 
+	fclose(file);
+
 	return 0;
 }
 
@@ -66,6 +67,7 @@ int main(int argc, char** argv){
 		// maximum clique finding
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
+	printf("%f\n", final);
 
 	exit(EXIT_SUCCESS);
 }
