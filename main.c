@@ -2,7 +2,7 @@
 #include "stdlib.h"
 #include "time.h"
 
-#define DEBUG
+//#define DEBUG
 
 typedef struct {
 	int nVertex;
