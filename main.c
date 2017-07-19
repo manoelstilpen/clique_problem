@@ -3,13 +3,24 @@
 #include "time.h"
 
 //#define DEBUG
+#define INF 9999999999
 
 typedef struct {
 	int nVertex;
 	int nEdge;
+	int* nAdjacencies;
+	
 	char** adjacency;
 
 }Graph;
+
+// remove_element(aux,10,7);
+int remove_index(int* from, int total, int index) {
+	if((total - index - 1) > 0) {
+		memmove(from+index, from+index+1, sizeof(int)*(total-index-1));
+	}
+	return total-1; // return the new array size
+}
 
 int read_instance(char* filename, Graph* graph){
 
@@ -31,10 +42,14 @@ int read_instance(char* filename, Graph* graph){
 
 	// allocating memory
 	graph->adjacency = (char**) malloc(graph->nVertex*sizeof(char*));
-	for(int i=0; i<graph->nVertex ; i++) graph->adjacency[i] = (char*) malloc(graph->nVertex*sizeof(char));
+	graph->nAdjacencies = (int*) malloc(graph->nVertex*sizeof(int));
+	for(int i=0; i<graph->nVertex ; i++){
+		graph->adjacency[i] = (char*) malloc(graph->nVertex*sizeof(char));
+	} 
 
 	// initializing positions with 0
 	for(int i=0; i<graph->nVertex ; i++){
+		graph->nAdjacencies[i] = 0;
 		for(int j=0 ; j<graph->nVertex ; j++){
 			graph->adjacency[i][j] = 0;
 		}
@@ -44,6 +59,7 @@ int read_instance(char* filename, Graph* graph){
 	int src, dest;
 	while(fscanf(file,"%*c %d %d", &src, &dest)){
 		graph->adjacency[src][dest] = 1;
+		graph->nAdjacencies[src]++;
 	}
 
 	fclose(file);
@@ -68,7 +84,16 @@ void old_algorithm_recursive(Graph* graph, int** vertex_list, int tam_list, int 
 			return;
 		}
 
-		
+
+		// procura pelo vertice que possui menos adjacencias
+		int min = 0;
+		int min_index = graph->nAdjacencies[min];
+		for(int i=0 ; i<graph->nVertex ; i++){
+			if(graph->nAdjacencies[i] < min){
+				min_index = i;
+				min = graph->nAdjacencies[i];
+			}
+		}
 
 	}
 
