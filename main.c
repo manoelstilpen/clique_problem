@@ -51,16 +51,34 @@ int read_instance(char* filename, Graph* graph){
 	return 0;
 }
 
-void old_algorithm_recursive(Graph* graph, int** vertex_list, int *max){
+void old_algorithm_recursive(Graph* graph, int** vertex_list, int tam_list, int quant_vertex, int *max){
 
+	if(tam_list == 0){
 
+		if(quant_vertex > *max){
+			*max = quant_vertex;
+		}
+
+		return;
+	}
+
+	while(tam_list != 0){
+
+		if(quant_vertex + tam_list <= *max){
+			return;
+		}
+
+		
+
+	}
 
 }
 
 int old_algorithm(Graph* graph){
 	int max = 0;
 	int* vertex_list = (int*) malloc(sizeof(int)*100);
-	old_algorithm_recursive(graph, &vertex_list, &max);
+	
+	//old_algorithm_recursive(graph, &vertex_list, &max);
 
 	return max;
 }
@@ -80,6 +98,7 @@ int main(int argc, char** argv){
 	clock_t inicio = clock();
 
 		// maximum clique finding
+		old_algorithm(&graph);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
 	printf("%f\n", final);
