@@ -51,6 +51,20 @@ int read_instance(char* filename, Graph* graph){
 	return 0;
 }
 
+void old_algorithm_recursive(Graph* graph, int** vertex_list, int *max){
+
+
+
+}
+
+int old_algorithm(Graph* graph){
+	int max = 0;
+	int* vertex_list = (int*) malloc(sizeof(int)*100);
+	old_algorithm_recursive(graph, &vertex_list, &max);
+
+	return max;
+}
+
 int main(int argc, char** argv){
 
 	if(argc != 2){
@@ -60,6 +74,7 @@ int main(int argc, char** argv){
 
 	Graph graph;
 
+	// read instance
 	read_instance(argv[1], &graph);
 
 	clock_t inicio = clock();
