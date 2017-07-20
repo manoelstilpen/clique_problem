@@ -87,10 +87,10 @@ int read_instance(char* filename, Graph* graph){
 
 void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int quant_vertex, int *max){
 	
-	/* for(int i=0 ; i<tam_list ; i++){
+	/*  for(int i=0 ; i<tam_list ; i++){
 		printf("%d ", vertex_list[i]);
 	}
-	printf("\n"); */
+	printf("\n");  */
 
 	if(tam_list == 0){
 
@@ -111,17 +111,24 @@ void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 		// procura pelo vertice que possui menos adjacencias
 		// utilizar heap para otimizar
 		int min_index = INF;
+		int min_index_vertex_list = INF;
 		int min = INF;
 		for(int i=0 ; i<tam_list ; i++){
 			if(graph->nAdjacencies[vertex_list[i]] < min){
 				min_index = vertex_list[i];
+				min_index_vertex_list = i;
 				min = graph->nAdjacencies[i];
 			}
 		}
 
 		// remove da lista o vertice
-		remove_index(vertex_list, tam_list, min_index);
+		remove_index(vertex_list, tam_list, min_index_vertex_list);
 		tam_list--;
+
+		/* for(int i=0 ; i<tam_list ; i++){
+			printf("%d ", vertex_list[i]);
+		}
+		printf("\n"); */
 
 		int* new_list = NULL;
 		int size_new_list = 0;
@@ -142,7 +149,7 @@ void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 						break;
 					}
 				}
-				
+
 			}
 		}
 
@@ -159,7 +166,7 @@ int old_algorithm(Graph* graph){
 		vertex_list[i] = i;
 	}
 
-	old_algorithm_recursive(graph, vertex_list, graph->nVertex, 1, &max);
+	old_algorithm_recursive(graph, vertex_list, graph->nVertex, 0, &max);
 
 	return max;
 }
