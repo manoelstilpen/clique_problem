@@ -27,6 +27,38 @@ int remove_index(int* from, int total, int index) {
 	return total-1; // return the new array size
 }
 
+void heap_refaz(Graph* graph, int *heap, int esquerda, int direita){
+    int i = esquerda; 
+    int j = i * 2 + 1; // j = primeiro filho
+    int aux = heap[i]; // aux = no i(pai de j)
+
+    while(j <= direita){
+        if (j < direita && graph->nAdjacencies[heap[j]] > graph->nAdjacencies[heap[j+1]]){
+            j++; // j recebe o outro filho de i
+        }
+
+        if (graph->nAdjacencies[aux] <= graph->nAdjacencies[heap[j]]){
+            break; // heap foi refeito corretamente
+        }
+
+        heap[i] = heap[j];
+        i = j;
+        j = i * 2 +1; // j = primeiro filho de i    
+    }
+
+    heap[i] = aux;
+}
+
+void heap_constroi(Graph* graph, int *heap, int quantidade){    
+    int esquerda;
+    esquerda = (quantidade / 2) - 1; 
+    
+    while(esquerda >= 0){
+        heap_refaz(graph, heap, esquerda, quantidade - 1);
+        esquerda--;
+    }
+}
+
 int read_instance(char* filename, Graph* graph){
 
 	FILE* file = fopen(filename, "r+");
@@ -116,25 +148,19 @@ void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 
 		// procura pelo vertice que possui menos adjacencias
 		// utilizar heap para otimizar
-		int min_index = INF;
-		int min_index_vertex_list = INF;
-		int min = INF;
+
+		heap_constroi(graph, vertex_list, tam_list);
+		int min_index = vertex_list[0];
+		int min_index_vertex_list = 0;
+/* 
 		for(int i=0 ; i<tam_list ; i++){
-			if(graph->nAdjacencies[vertex_list[i]] < min){
-				min_index = vertex_list[i];
-				min_index_vertex_list = i;
-				min = graph->nAdjacencies[i];
-			}
+			printf("%d %d - ", vertex_list[i], graph->nAdjacencies[vertex_list[i]]);
 		}
+		printf("\n"); */
 
 		// remove da lista o vertice
 		remove_index(vertex_list, tam_list, min_index_vertex_list);
 		tam_list--;
-
-		/* for(int i=0 ; i<tam_list ; i++){
-			printf("%d ", vertex_list[i]);
-		}
-		printf("\n"); */
 
 		int* new_list = NULL;
 		int size_new_list = 0;
