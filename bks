@@ -1,22 +1,41 @@
-1.clq
-Literatura: 345
-Old Algorithm:
+1.clq ~ MANN_a45.clq
+1035 533115
+Literatura:     345
+Old Algorithm: 
 
-2.clq
-Old Algorithm: 16 ~ 4.6 seg
+2.clq ~ MANN_a9.clq
+45 918
+Literatura:     16
+Old Algorithm:  16 ~ 4.6 seg
 
-3.clq
+3.clq ~ brock200_1
+200 14834
+Literatura:     21
+Old Algorithm:  
 
-4.clq
+4.clq ~ johnson16-2-4.clq
+120 5460
+Literatura:     8
+Old Algorithm:  8 ~ 46 seg
 
-5.clq
+5.clq ~ johnson8-4-4.clq
+70 1855
+Literatura:     14
+Old Algorithm:  
 
-6.clq
-27
+6.clq ~ keller5.clq
+776 225990
+Literatura:     
+Old Algorithm:  27
 
-7.clq
+7.clq ~ san200_0.7_X.clq
+200 13930
+Literatura:     18
+Old Algorithm:     
 
-8.clq
-
+8.clq ~ san400_0.7_X.clq
+400 55860
+Literatura:     
+Old Algorithm:      
 
 
