@@ -1,3 +1,7 @@
+/**
+ NAO ESQUECER DE SOMAR 1 NOS INDICES DOS VERTICES QUE COMPOEM A CLIQUE MAXIMA
+*/
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "time.h"
@@ -42,10 +46,10 @@ int read_instance(char* filename, Graph* graph){
 	#endif
 
 	// allocating memory
-	graph->adjacency = (char**) malloc(graph->nVertex*sizeof(char*)+1);
-	graph->nAdjacencies = (int*) malloc(graph->nVertex*sizeof(int)+1);
-	for(int i=0; i<=graph->nVertex ; i++){
-		graph->adjacency[i] = (char*) malloc(graph->nVertex*sizeof(char)+1);
+	graph->adjacency = (char**) malloc(graph->nVertex*sizeof(char*));
+	graph->nAdjacencies = (int*) malloc(graph->nVertex*sizeof(int));
+	for(int i=0; i<graph->nVertex ; i++){
+		graph->adjacency[i] = (char*) malloc(graph->nVertex*sizeof(char));
 	} 
 
 	// initializing positions with 0
@@ -60,21 +64,23 @@ int read_instance(char* filename, Graph* graph){
 	int src, dest;
 	while(fscanf(file,"%*c %d %d\n", &src, &dest) != EOF){
 //		printf("%d %d\n", src, dest);
-		graph->adjacency[src][dest] = 1;
-		(graph->nAdjacencies[src])++;
+		graph->adjacency[src-1][dest-1] = 1;
+		graph->adjacency[dest-1][src-1] = 1;
+		(graph->nAdjacencies[src-1])++;
+		(graph->nAdjacencies[dest-1])++;
 	}
 
 	fclose(file);
 
 	#ifdef DEBUG
 
-		for(int i=0 ; i<graph->nVertex ; i++){
+		 for(int i=0 ; i<graph->nVertex ; i++){
 			for(int j=0 ; j<graph->nVertex ; j++){
 				if(graph->adjacency[i][j] == 1) printf("1");
 				else printf("0");
 			}
 			printf("\n");
-		}
+		}  
 
 		for(int i=0 ; i<graph->nVertex ; i++){
 			printf("%d\n", graph->nAdjacencies[i]);
@@ -87,10 +93,10 @@ int read_instance(char* filename, Graph* graph){
 
 void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int quant_vertex, int *max){
 	
-	/*  for(int i=0 ; i<tam_list ; i++){
-		printf("%d ", vertex_list[i]);
+	/* 	printf("%d ", tam_list);
+	  for(int i=0 ; i<tam_list ; i++){
 	}
-	printf("\n");  */
+	printf("\n");   */
 
 	if(tam_list == 0){
 
@@ -154,6 +160,7 @@ void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 		}
 
 		old_algorithm_recursive(graph, new_list, size_new_list, quant_vertex+1, max);
+		free(new_list);
 	}
 
 }
