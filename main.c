@@ -9,6 +9,8 @@
 
 //#define DEBUG
 #define INF 99999999
+#define TRUE 1
+#define FALSE 0
 
 typedef struct {
 	int nVertex;
@@ -18,6 +20,9 @@ typedef struct {
 	char** adjacency;
 
 }Graph;
+
+int* history;
+int* c;
 
 // remove_element(aux,10,7);
 int remove_index(int* from, int total, int index) {
@@ -146,26 +151,28 @@ void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 			return;
 		}
 
-		// procura pelo vertice que possui menos adjacencias
-		// utilizar heap para otimizar
-
 		heap_constroi(graph, vertex_list, tam_list);
 		int min_index = vertex_list[0];
 		int min_index_vertex_list = 0;
-/* 
-		for(int i=0 ; i<tam_list ; i++){
+
+		history[quant_vertex] = min_index+1;
+ 
+		/* for(int i=0 ; i<tam_list ; i++){
 			printf("%d %d - ", vertex_list[i], graph->nAdjacencies[vertex_list[i]]);
 		}
-		printf("\n"); */
+		printf("\n");  */
 
-		// remove da lista o vertice
+		// remove da lista o vertice com a menor quantidade de adjacencias
 		remove_index(vertex_list, tam_list, min_index_vertex_list);
 		tam_list--;
 
 		int* new_list = NULL;
 		int size_new_list = 0;
-		for(int i=0 ; i<graph->nVertex ; i++){
+		int count = 0;
+		for(int i=0 ; i<graph->nVertex && count < graph->nAdjacencies[min_index]; i++){
+
 			if(graph->adjacency[min_index][i] == 1){
+				count++;
 
 				for(int j=0 ; j<tam_list ; j++){
 					if(vertex_list[j] == i){
@@ -181,8 +188,8 @@ void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 						break;
 					}
 				}
-
 			}
+
 		}
 
 		old_algorithm_recursive(graph, new_list, size_new_list, quant_vertex+1, max);
@@ -204,6 +211,114 @@ int old_algorithm(Graph* graph){
 	return max;
 }
 
+void new_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int quant_vertex, short int* found, int *max){
+
+	/* for(int i=0 ; i<tam_list ; i++){
+		printf("%d -",vertex_list[i]);
+	}
+	printf("\n");
+ */
+	if(tam_list == 0){
+
+		if(quant_vertex > *max){
+			// novo clique maximo encontrado
+			*max = quant_vertex;
+			*found = TRUE;
+		}
+
+		return;
+	}
+
+	while(tam_list != 0){
+
+		if(quant_vertex + tam_list <= *max){
+			return;
+		}
+
+		//heap_constroi(graph, vertex_list, tam_list);
+		int min_index = vertex_list[0];
+		int min_index_vertex_list = 0;
+
+		history[quant_vertex-1] = min_index+1;
+ 
+		if(quant_vertex + c[min_index] <= *max){
+			return;
+		}
+
+		/* for(int i=0 ; i<tam_list ; i++){
+			printf("%d %d - ", vertex_list[i], graph->nAdjacencies[vertex_list[i]]);
+		}
+		printf("\n");  */
+
+		// remove da lista o vertice com a menor quantidade de adjacencias
+		remove_index(vertex_list, tam_list, min_index_vertex_list);
+		tam_list--;
+
+		int* new_list = NULL;
+		int size_new_list = 0;
+		int count = 0;
+		for(int i=0 ; i<graph->nVertex && count < graph->nAdjacencies[min_index]; i++){
+
+			if(graph->adjacency[min_index][i] == 1){
+				count++;
+
+				for(int j=0 ; j<tam_list ; j++){
+					if(vertex_list[j] == i){
+						// adiciona na lista
+						if(new_list == NULL){
+							new_list = (int*) malloc(sizeof(int));
+							new_list[0] = vertex_list[j];
+						} else {
+							new_list = (int*) realloc(new_list, sizeof(int)*(size_new_list+1));
+							new_list[size_new_list] = vertex_list[j];
+						}
+						size_new_list++;
+						break;
+					}
+				}
+			}
+
+		}
+
+		//new_algorithm_recursive(graph, vertex_list, tam_list, quant_vertex, found, max)
+		new_algorithm_recursive(graph, new_list, size_new_list, quant_vertex+1, found, max);
+
+		free(new_list);
+
+		if(*found == TRUE){
+			return;
+		}
+	}
+
+
+}
+
+int new_algorithm(Graph* graph){
+	
+	short int found = FALSE;
+	int max = 0;
+	// Si
+	int* vertex_list = (int*) malloc(sizeof(int)*graph->nVertex);
+
+	for(int i=graph->nVertex-1 ; i>=0 ; i--){
+		int tam_list = 0;
+		for(int j=i ; j<graph->nVertex ; j++){
+			if(graph->adjacency[i][j] == 1){
+				vertex_list[tam_list] = j;
+				tam_list++;
+
+				if(tam_list == graph->nAdjacencies[i]) break;
+			}
+		}
+
+		new_algorithm_recursive(graph, vertex_list, tam_list, 1, &found, &max);
+		c[i] = max;
+	}
+
+	return max;
+
+}
+
 int main(int argc, char** argv){
 
 	if(argc != 2){
@@ -216,24 +331,34 @@ int main(int argc, char** argv){
 	// read instance
 	read_instance(argv[1], &graph);
 
-	/* int* a = (int*) malloc(sizeof(int)*10);
+/*	int* a = (int*) malloc(sizeof(int)*10);
 	for(int i=0 ; i<10 ; i++){
 		a[i] = i;
 	}
-	a = (int*) realloc(a, sizeof(int)*11);
-	a[10] = 0;
-	for(int i=0 ; i<11 ; i++){
+	teste(a);
+	//a = (int*) realloc(a, sizeof(int)*11);
+	//a[10] = 0;
+	for(int i=0 ; i<10 ; i++){
 		printf("%d\n", a[i]);
-	} */
+	} 
+*/
+
+	// maior clique tera tamanho n
+	history = (int*) malloc(sizeof(int)*graph.nVertex);
+	c = (int*) malloc(sizeof(int)*graph.nVertex);
 
 	clock_t inicio = clock();
 
 		// maximum clique finding
-		int max = old_algorithm(&graph);
+		int max = new_algorithm(&graph);
 		printf("MAX: %d\n", max);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
 	printf("%f\n", final);
+
+/* 	for(int i=0 ; i<max ; i++){
+		printf("%d - ", history[i]);
+	} */
 
 	exit(EXIT_SUCCESS);
 }
