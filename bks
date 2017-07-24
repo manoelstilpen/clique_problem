@@ -3,7 +3,7 @@
 Literatura:     345
 Old Algorithm:
 New Algorithm:
-        -O2:    336 ~ 8.92
+        -O2:    
 
 2.clq ~ MANN_a9.clq
 45 918 ~ 20
@@ -12,14 +12,14 @@ Old Algorithm:
         -O2:    16 ~ 1.6 seg
         no-opt: 16 ~ 4.6 seg
 New Algorithm:
-        -O2:    16 ~ 0.0004 seg
+        -O2:    16 ~ 0.007 seg
 
 3.clq ~ brock200_1
 200 14834 ~ 74
 Literatura:     21
 Old Algorithm:
 New Algorithm:
-        -O2:    16 ~ 0.01
+        -O2:    
 
 4.clq ~ johnson16-2-4.clq
 120 5460 ~ 45
@@ -28,7 +28,7 @@ Old Algorithm:
         -O2:    8 ~ 18 seg
         no-opt: 8 ~ 46 seg
 New Algorithm: 
-        -O2:    8 ~ 0.001 seg
+        -O2:    8 ~ 0.411 seg
 
 5.clq ~ johnson8-4-4.clq
 70 1855 ~ 26
@@ -37,28 +37,28 @@ Old Algorithm:
         -O2:    14 ~ 0.1 seg
         no-opt: 14 ~ 0.4 seg
 New Algorithm:
-        -O2:    14 ~ 0.0004 seg
+        -O2:    14 ~ 0.0009 seg
         
 6.clq ~ keller5.clq
 776 225990 ~ 291
 Literatura:     27
 Old Algorithm:  
 New Algorithm:
-        -O2:    20 ~ 0.31 seg
+        -O2:   
 
 7.clq ~ san200_0.7_1.clq
 200 13930 ~ 69
 Literatura:     30
 Old Algorithm:     
 New Algorithm:
-        -O2:    17 ~ 0.14 seg
+        -O2:    
 
 8.clq ~ san400_0.7_X.clq
 400 55860 ~ 139
 Literatura:     
 Old Algorithm:
 New Algorithm:
-        -O2:    15 ~ 0.05 seg
+        -O2:    
 
 9.clq ~ p_hat300-1.clq
 300 10933 ~ 36
@@ -66,4 +66,4 @@ Literatura:     8
 Old Algorithm: 
         -O2:    8 ~ 0.1 seg
 New Algorithm:
-        -O2:    7 ~ 0.005 seg
+        -O2:    8 ~ 0.07 seg
