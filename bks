@@ -1,7 +1,9 @@
 1.clq ~ MANN_a45.clq
 1035 533115 ~ 515
 Literatura:     345
-Old Algorithm: 
+Old Algorithm:
+New Algorithm:
+        -O2:    336 ~ 8.92
 
 2.clq ~ MANN_a9.clq
 45 918 ~ 20
@@ -16,7 +18,6 @@ New Algorithm:
 200 14834 ~ 74
 Literatura:     21
 Old Algorithm:
-
 New Algorithm:
         -O2:    16 ~ 0.01
 
