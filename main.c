@@ -113,6 +113,7 @@ int read_instance(char* filename, Graph* graph){
 	#ifdef DEBUG
 
 		 for(int i=0 ; i<graph->nVertex ; i++){
+			 printf("%d: ", i);
 			for(int j=0 ; j<graph->nVertex ; j++){
 				if(graph->adjacency[i][j] == 1) printf("1");
 				else printf("0");
@@ -121,12 +122,31 @@ int read_instance(char* filename, Graph* graph){
 		}  
 
 		for(int i=0 ; i<graph->nVertex ; i++){
-			printf("%d\n", graph->nAdjacencies[i]);
+		//	printf("%d\n", graph->nAdjacencies[i]);
 		}
 
 	#endif
 
 	return 0;
+}
+
+void complemento(Graph* graph){
+
+	for(int i=0 ; i<graph->nVertex ; i++){
+		graph->nAdjacencies[i] = 0;
+	}
+
+	for(int i=0 ; i<graph->nVertex ; i++){
+		for(int j=0 ; j<graph->nVertex ; j++){
+
+			if(graph->adjacency[i][j] == 1){
+				graph->adjacency[i][j] = 0;
+			} else {
+				graph->adjacency[i][j] = 1;
+				graph->nAdjacencies[i]++;
+			}
+		}
+	}
 }
 
 void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int quant_vertex, int *max){
@@ -246,6 +266,22 @@ short int binary_search(int* vetor, int size, int num){
 	 }
 }
 
+short int testa_clique(Graph* graph, int* vertex, int tam){
+
+	for(int i=0 ; i<tam ; i++){
+		for(int j=0 ; j<tam ; j++){
+			if(j != i){
+				if(graph->adjacency[vertex[i]-1][vertex[j]-1] == 0){
+					printf("%d %d\n", vertex[i], vertex[j]);
+					return FALSE;
+				}
+			}
+		}
+	}
+
+	return TRUE;
+}
+
 void new_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int quant_vertex, short int* found, int *max){
 	/* 
 	printf("INICIO: ");
@@ -272,11 +308,8 @@ void new_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 			return;
 		}
 
-		//heap_constroi(graph, vertex_list, tam_list);
 		int min_index = vertex_list[0];
 		int min_index_vertex_list = 0;
-
-		history[quant_vertex-1] = min_index+1;
  
 	 	if(quant_vertex + c[min_index] <= *max){
 			return;
@@ -313,6 +346,7 @@ void new_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 		free(new_list);
 
 		if(*found == TRUE){
+			history[quant_vertex-1] = min_index+1;
 			return;
 		}
 	}
@@ -340,11 +374,15 @@ int new_algorithm(Graph* graph){
 		}
 
 		new_algorithm_recursive(graph, vertex_list, tam_list, 1, &found, &max);
+
+		if(found == TRUE){
+			history[max-1] = i+1;
+		}
+
 		c[i] = max;
 	}
 
 	return max;
-
 }
 
 
@@ -394,15 +432,20 @@ int main(int argc, char** argv){
 	clock_t inicio = clock();
 
 		// maximum clique finding
+		complemento(&graph);
 		int max = new_algorithm(&graph);
 		printf("MAX: %d\n", max);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
 	printf("%f\n", final);
 
-/* 	for(int i=0 ; i<max ; i++){
+ 	for(int i=0 ; i<max ; i++){
 		printf("%d - ", history[i]);
-	} */
+	}
+	printf("\n");
+
+	short int teste = testa_clique(&graph,history,max);
+	if(teste == FALSE) printf("DEU MERDA NO CLIQUE\n");
 
 	exit(EXIT_SUCCESS);
 }

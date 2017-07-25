@@ -19,7 +19,7 @@ New Algorithm:
 Literatura:     21
 Old Algorithm:
 New Algorithm:
-        -O2:    
+        -O2:    21 ~ 355.23 seg -> 5min
 
 4.clq ~ johnson16-2-4.clq
 120 5460 ~ 45
@@ -51,7 +51,7 @@ New Algorithm:
 Literatura:     30
 Old Algorithm:     
 New Algorithm:
-        -O2:    
+        -O2:    30 ~ 2985 seg -> 50min 
 
 8.clq ~ san400_0.7_X.clq
 400 55860 ~ 139
