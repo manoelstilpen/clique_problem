@@ -385,7 +385,6 @@ int new_algorithm(Graph* graph){
 	return max;
 }
 
-
 void teste(){
 
 	int* vec = (int*) malloc(sizeof(int)*1000);
@@ -432,7 +431,7 @@ int main(int argc, char** argv){
 	clock_t inicio = clock();
 
 		// maximum clique finding
-		complemento(&graph);
+		//complemento(&graph);
 		int max = new_algorithm(&graph);
 		printf("MAX: %d\n", max);
 
@@ -444,6 +443,7 @@ int main(int argc, char** argv){
 	}
 	printf("\n");
 
+//	complemento(&graph);
 	short int teste = testa_clique(&graph,history,max);
 	if(teste == FALSE) printf("DEU MERDA NO CLIQUE\n");
 
