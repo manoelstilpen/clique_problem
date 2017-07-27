@@ -150,6 +150,16 @@ int read_instance(char* filename, Graph* graph){
 				else printf("0");
 			}
 			printf("\n");
+		} 
+		printf("\n");
+
+		for(int i=0 ; i<graph->nVertex ; i++){
+			printf("%d: ", i);
+			for(int j=0 ; j<graph->nVertex ; j++){
+				if(graph->complement[i][j] == 1) printf("1");
+				else printf("0");
+			}
+			printf("\n");
 		}  
 
 		int maior = 0;
@@ -471,7 +481,6 @@ int independent_set(Graph* graph){
 	int max = 0;
 	int* vertex_list;
 	int tam_list;
-	srand(time(NULL));
 
 	for(int k=0 ; k<graph->nVertex ; k++){
 
@@ -480,15 +489,20 @@ int independent_set(Graph* graph){
 		for(int i=0 ; i<graph->nVertex ; i++){
 			vertex_list[i] = i;
 		}
-
-		// colocar aleatorio, fazer shuffle ou ordenar de acordo com a quantidade de adjacencias
-//		shuffle(vertex_list, tam_list);
+		
 		quickSort(graph,vertex_list,0,tam_list-1);
+//		shuffle(vertex_list, tam_list);
 
-		for(int i=k ; i<tam_list ; i++){
+		for(int i=k ; i<tam_list+k ; i++){
 
-			int index = vertex_list[i];
-/*			printf("index %d\n", index+1);
+			int index;
+			if(i >= tam_list){
+				index = vertex_list[i-tam_list];
+			} else {
+				index = vertex_list[i];
+			}
+
+/* 			printf("index %d %d\n", i, index+1);
 
 			printf("LIST: ");
 			for(int j=0 ; j<tam_list ; j++){
@@ -496,9 +510,10 @@ int independent_set(Graph* graph){
 			}
 			printf("\n"); 
  */
+
 			for(int j=0 ; j<tam_list ; j++){
 				if(graph->complement[index][vertex_list[j]] == 1){
-				//	printf("remove %d\n", vertex_list[j]+1);
+//					printf("remove %d\n", vertex_list[j]+1);
 					if(j < i) i--;
 					remove_index(vertex_list,tam_list,j);
 					tam_list--;
@@ -506,22 +521,18 @@ int independent_set(Graph* graph){
 				}
 			}
 		}
-/* 
-	 	for(int i=0 ; i<tam_list ; i++){
-			printf("%d - ", vertex_list[i]+1);
-		}
-		printf("\n");  */
 
 		if(tam_list > max){
-			if(testa_clique(graph,vertex_list,tam_list) == TRUE){				
-				max = tam_list;
+			max = tam_list;
+			/* for(int i=0 ; i<tam_list ; i++){
+				printf("%d - ", vertex_list[i]+1);
 			}
+			printf("\n"); */
+			history = vertex_list;
 		}
 
-		free(vertex_list);
+//		free(vertex_list);
 	}
-
-	printf("%d\n",max);
 
 	return max;
 }
@@ -590,14 +601,14 @@ int main(int argc, char** argv){
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
 	printf("%f\n", final);
 
- 	/* for(int i=0 ; i<max ; i++){
+ 	 for(int i=0 ; i<max ; i++){
 		printf("%d - ", history[i]);
 	}
-	printf("\n"); */
-
+	printf("\n");
+ 
 //	complemento(&graph);
-/* 	short int teste = testa_clique(&graph,history,max);
-	if(teste == FALSE) printf("DEU MERDA NO CLIQUE\n"); */
+ 	short int teste = testa_clique(&graph,history,max);
+	if(teste == FALSE) printf("DEU MERDA NO CLIQUE\n");
 
 	exit(EXIT_SUCCESS);
 }
