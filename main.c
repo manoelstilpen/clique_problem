@@ -157,7 +157,7 @@ int read_instance(char* filename, Graph* graph){
 			if(graph->nAdjacencies[i] > maior){
 				maior = graph->nAdjacencies[i];
 			}
-		//	printf("%d\n", graph->nAdjacencies[i]);
+			printf("%d: %d\n",i, graph->nAdjacencies[i]);
 		}
 		printf("MAIOR: %d\n", maior);
 
@@ -416,6 +416,56 @@ void shuffle(int *array, size_t n){
     }
 }
 
+void swap(int* a, int* b)
+{
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+ 
+/* This function takes last element as pivot, places
+   the pivot element at its correct position in sorted
+    array, and places all smaller (smaller than pivot)
+   to left of pivot and all greater elements to right
+   of pivot */
+int partition (Graph* graph,int arr[], int low, int high)
+{
+    int pivot = arr[high];   // pivot
+    int i = (low - 1);  // Index of smaller element
+ 
+    for (int j = low; j <= high- 1; j++)
+    {
+        // If current element is smaller than or
+        // equal to pivot
+        if (graph->nAdjacencies[arr[j]] >= graph->nAdjacencies[pivot])
+        {
+            i++;    // increment index of smaller  element
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return (i + 1);
+}
+ 
+/* The main function that implements QuickSort
+ arr[] --> Array to be sorted,
+  low  --> Starting index,
+  high  --> Ending index */
+void quickSort(Graph* graph, int arr[], int low, int high)
+{
+    if (low < high)
+    {
+        /* pi is partitioning index, arr[p] is now
+           at right place */
+        int pi = partition(graph, arr, low, high);
+ 
+        // Separately sort elements before
+        // partition and after partition
+        quickSort(graph, arr, low, pi - 1);
+        quickSort(graph, arr, pi + 1, high);
+    }
+}
+
 int independent_set(Graph* graph){
 
 	int max = 0;
@@ -431,7 +481,9 @@ int independent_set(Graph* graph){
 			vertex_list[i] = i;
 		}
 
-		shuffle(vertex_list, tam_list);
+		// colocar aleatorio, fazer shuffle ou ordenar de acordo com a quantidade de adjacencias
+//		shuffle(vertex_list, tam_list);
+		quickSort(graph,vertex_list,0,tam_list-1);
 
 		for(int i=k ; i<tam_list ; i++){
 
@@ -474,7 +526,7 @@ int independent_set(Graph* graph){
 	return max;
 }
 
-void teste(){
+void teste(Graph* graph){
 
 	int* vec = (int*) malloc(sizeof(int)*1000);
 	for(int i=0 ; i<1000 ; i++){
@@ -495,6 +547,18 @@ void teste(){
 
 	free(vec);
 
+	vec = (int*) malloc(sizeof(int)*13);
+	for(int i=0 ; i<8 ; i++){
+		vec[i] = i;
+	}
+
+	quickSort(graph, vec, 0, 7);
+
+	for(int i=0 ; i<8 ; i++){
+		printf("(%d - %d) ", vec[i], graph->nAdjacencies[vec[i]]);
+	}
+
+	free(vec);
 }
 
 int main(int argc, char** argv){
@@ -514,7 +578,7 @@ int main(int argc, char** argv){
 	c = (int*) malloc(sizeof(int)*graph.nVertex);
 
 	#ifdef DEBUG
-		teste();
+		teste(&graph);
 	#endif
 
 	clock_t inicio = clock();
