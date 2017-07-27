@@ -7,6 +7,7 @@
 #include "time.h"
 #include "string.h"
 #include "assert.h"
+#include "time.h"
 
 //#define DEBUG
 #define INF 99999999
@@ -19,6 +20,7 @@ typedef struct {
 	int* nAdjacencies;
 	
 	char** adjacency;
+	char** complement;
 
 }Graph;
 
@@ -65,6 +67,26 @@ void heap_constroi(Graph* graph, int *heap, int quantidade){
     }
 }
 
+void complemento(Graph* graph){
+
+	for(int i=0 ; i<graph->nVertex ; i++){
+		graph->nAdjacencies[i] = 0;
+	}
+
+	for(int i=0 ; i<graph->nVertex ; i++){
+		for(int j=0 ; j<graph->nVertex ; j++){
+			if( i != j){
+				if(graph->adjacency[i][j] == 1){
+					graph->adjacency[i][j] = 0;
+				} else {
+					graph->adjacency[i][j] = 1;
+					graph->nAdjacencies[i]++;
+				}
+			}
+		}
+	}
+}
+
 int read_instance(char* filename, Graph* graph){
 
 	FILE* file = fopen(filename, "r+");
@@ -77,7 +99,10 @@ int read_instance(char* filename, Graph* graph){
 	graph->nEdge = 0;
 
 	// add * after % to ignore the input
-	fscanf(file, "%*c %*s %d %d\n", &(graph->nVertex), &(graph->nEdge));
+	int n = fscanf(file, "%*c %*s %d %d\n", &(graph->nVertex), &(graph->nEdge));
+	if(n != 2){
+		printf("ERROR\n");
+	}
 
 	#ifdef DEBUG
 		printf("%d %d\n", graph->nVertex, graph->nEdge);
@@ -85,9 +110,11 @@ int read_instance(char* filename, Graph* graph){
 
 	// allocating memory
 	graph->adjacency = (char**) malloc(graph->nVertex*sizeof(char*));
+	graph->complement = (char**) malloc(graph->nVertex*sizeof(char*));
 	graph->nAdjacencies = (int*) malloc(graph->nVertex*sizeof(int));
 	for(int i=0; i<graph->nVertex ; i++){
 		graph->adjacency[i] = (char*) malloc(graph->nVertex*sizeof(char));
+		graph->complement[i] = (char*) malloc(graph->nVertex*sizeof(char));
 	} 
 
 	// initializing positions with 0
@@ -95,6 +122,8 @@ int read_instance(char* filename, Graph* graph){
 		graph->nAdjacencies[i] = 0;
 		for(int j=0 ; j<graph->nVertex ; j++){
 			graph->adjacency[i][j] = 0;
+			if(i != j) graph->complement[i][j] = 1;
+			else graph->complement[i][j] = 0;
 		}
 	}
 
@@ -104,6 +133,8 @@ int read_instance(char* filename, Graph* graph){
 //		printf("%d %d\n", src, dest);
 		graph->adjacency[src-1][dest-1] = 1;
 		graph->adjacency[dest-1][src-1] = 1;
+		graph->complement[src-1][dest-1] = 0;
+		graph->complement[dest-1][src-1] = 0;
 		(graph->nAdjacencies[src-1])++;
 		(graph->nAdjacencies[dest-1])++;
 	}
@@ -111,9 +142,9 @@ int read_instance(char* filename, Graph* graph){
 	fclose(file);
 
 	#ifdef DEBUG
-
-		 for(int i=0 ; i<graph->nVertex ; i++){
-			 printf("%d: ", i);
+	
+		for(int i=0 ; i<graph->nVertex ; i++){
+			printf("%d: ", i);
 			for(int j=0 ; j<graph->nVertex ; j++){
 				if(graph->adjacency[i][j] == 1) printf("1");
 				else printf("0");
@@ -121,32 +152,18 @@ int read_instance(char* filename, Graph* graph){
 			printf("\n");
 		}  
 
+		int maior = 0;
 		for(int i=0 ; i<graph->nVertex ; i++){
+			if(graph->nAdjacencies[i] > maior){
+				maior = graph->nAdjacencies[i];
+			}
 		//	printf("%d\n", graph->nAdjacencies[i]);
 		}
+		printf("MAIOR: %d\n", maior);
 
 	#endif
 
 	return 0;
-}
-
-void complemento(Graph* graph){
-
-	for(int i=0 ; i<graph->nVertex ; i++){
-		graph->nAdjacencies[i] = 0;
-	}
-
-	for(int i=0 ; i<graph->nVertex ; i++){
-		for(int j=0 ; j<graph->nVertex ; j++){
-
-			if(graph->adjacency[i][j] == 1){
-				graph->adjacency[i][j] = 0;
-			} else {
-				graph->adjacency[i][j] = 1;
-				graph->nAdjacencies[i]++;
-			}
-		}
-	}
 }
 
 void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int quant_vertex, int *max){
@@ -267,12 +284,12 @@ short int binary_search(int* vetor, int size, int num){
 }
 
 short int testa_clique(Graph* graph, int* vertex, int tam){
-
+	
 	for(int i=0 ; i<tam ; i++){
 		for(int j=0 ; j<tam ; j++){
 			if(j != i){
-				if(graph->adjacency[vertex[i]-1][vertex[j]-1] == 0){
-					printf("%d %d\n", vertex[i], vertex[j]);
+				if(graph->adjacency[vertex[i]][vertex[j]] == 0){
+//					printf("%d %d\n", vertex[i], vertex[j]);
 					return FALSE;
 				}
 			}
@@ -385,6 +402,78 @@ int new_algorithm(Graph* graph){
 	return max;
 }
 
+void shuffle(int *array, size_t n){
+    if (n > 1) 
+    {
+        size_t i;
+        for (i = 0; i < n - 1; i++) 
+        {
+          size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+          int t = array[j];
+          array[j] = array[i];
+          array[i] = t;
+        }
+    }
+}
+
+int independent_set(Graph* graph){
+
+	int max = 0;
+	int* vertex_list;
+	int tam_list;
+	srand(time(NULL));
+
+	for(int k=0 ; k<graph->nVertex ; k++){
+
+		vertex_list = (int*) malloc(sizeof(int)*graph->nVertex);
+		tam_list = graph->nVertex;
+		for(int i=0 ; i<graph->nVertex ; i++){
+			vertex_list[i] = i;
+		}
+
+		shuffle(vertex_list, tam_list);
+
+		for(int i=k ; i<tam_list ; i++){
+
+			int index = vertex_list[i];
+/*			printf("index %d\n", index+1);
+
+			printf("LIST: ");
+			for(int j=0 ; j<tam_list ; j++){
+				printf("%d - ", vertex_list[j]+1);
+			}
+			printf("\n"); 
+ */
+			for(int j=0 ; j<tam_list ; j++){
+				if(graph->complement[index][vertex_list[j]] == 1){
+				//	printf("remove %d\n", vertex_list[j]+1);
+					if(j < i) i--;
+					remove_index(vertex_list,tam_list,j);
+					tam_list--;
+					j--;
+				}
+			}
+		}
+/* 
+	 	for(int i=0 ; i<tam_list ; i++){
+			printf("%d - ", vertex_list[i]+1);
+		}
+		printf("\n");  */
+
+		if(tam_list > max){
+			if(testa_clique(graph,vertex_list,tam_list) == TRUE){				
+				max = tam_list;
+			}
+		}
+
+		free(vertex_list);
+	}
+
+	printf("%d\n",max);
+
+	return max;
+}
+
 void teste(){
 
 	int* vec = (int*) malloc(sizeof(int)*1000);
@@ -431,21 +520,20 @@ int main(int argc, char** argv){
 	clock_t inicio = clock();
 
 		// maximum clique finding
-		//complemento(&graph);
-		int max = new_algorithm(&graph);
+		int max = independent_set(&graph);
 		printf("MAX: %d\n", max);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
 	printf("%f\n", final);
 
- 	for(int i=0 ; i<max ; i++){
+ 	/* for(int i=0 ; i<max ; i++){
 		printf("%d - ", history[i]);
 	}
-	printf("\n");
+	printf("\n"); */
 
 //	complemento(&graph);
-	short int teste = testa_clique(&graph,history,max);
-	if(teste == FALSE) printf("DEU MERDA NO CLIQUE\n");
+/* 	short int teste = testa_clique(&graph,history,max);
+	if(teste == FALSE) printf("DEU MERDA NO CLIQUE\n"); */
 
 	exit(EXIT_SUCCESS);
 }
