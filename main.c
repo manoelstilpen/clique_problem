@@ -9,7 +9,7 @@
 #include "assert.h"
 #include "time.h"
 
-#define DEBUG
+//#define DEBUG
 #define INF 99999999
 #define TRUE 1
 #define FALSE 0
@@ -26,6 +26,28 @@ typedef struct {
 
 int* history;
 int* c;
+
+int remove_index(int* from, int total, int index);
+int* copy_array(int const* src, int len);
+void heap_refaz(Graph* graph, int *heap, int esquerda, int direita);
+void heap_constroi(Graph* graph, int *heap, int quantidade);
+void complemento(Graph* graph);
+void old_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int quant_vertex, int *max);
+int old_algorithm(Graph* graph);
+short int binary_search(int* vetor, int size, int num);
+int read_instance(char* filename, Graph* graph);
+void new_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int quant_vertex, short int* found, int *max);
+int new_algorithm(Graph* graph);
+void shuffle(int *array, size_t n);
+void swap(int* a, int* b);
+int partition (Graph* graph,int arr[], int low, int high);
+void quickSort(Graph* graph, int arr[], int low, int high);
+int independent_set(Graph* graph);
+void update_admissibles(Graph* graph, short int* admissibles, int* vertex_list, int tam_list, int* nAdmissibles);
+short int testa_clique(Graph* graph, int* vertex, int tam);
+int grasp_independent_set(Graph* graph);
+void local_search(Graph* graph, int* original_set, int* tam_set, int k);
+void teste(Graph* graph);
 
 // remove_element(aux,10,7);
 int remove_index(int* from, int total, int index) {
@@ -547,7 +569,7 @@ int independent_set(Graph* graph){
 	return max;
 }
 
-void update_admissibles(Graph* graph, short int* admissibles, int* vertex_list, int tam_list){
+void update_admissibles(Graph* graph, short int* admissibles, int* vertex_list, int tam_list, int* nAdmissibles){
 	// atualiza os vertices que sao admissiveis na atual solucao
 
 	for(int i=0 ; i<graph->nVertex ; i++){
@@ -562,6 +584,15 @@ void update_admissibles(Graph* graph, short int* admissibles, int* vertex_list, 
 				}
 
 				break;
+			}
+		}
+	}
+
+	if(nAdmissibles != NULL){
+		*nAdmissibles = 0;
+		for(int i=0 ; i<graph->nVertex ; i++){
+			if(admissibles[i] == TRUE){
+				(*nAdmissibles)++;
 			}
 		}
 	}
@@ -593,7 +624,7 @@ int grasp_independent_set(Graph* graph){
 
 	for(int i=0 ; i<graph->nVertex ; i++){
 
-		update_admissibles(graph, admissible, vertex_list, tam_list);
+		update_admissibles(graph, admissible, vertex_list, tam_list, NULL);
 
 		int menor = INF;
 		int maior = -INF;
@@ -632,8 +663,6 @@ int grasp_independent_set(Graph* graph){
 		}
 //		printf("\ntam lrc: %d\n", tam_lrc);
 
-		
-
 		if(tam_lrc != 0){
 
 			int a = rand() % tam_lrc;
@@ -644,6 +673,7 @@ int grasp_independent_set(Graph* graph){
 
 		free(lrc);
 	}
+
 	
 //	printf("\n\n");
 	for(int i=0 ; i<tam_list ; i++){
@@ -651,27 +681,29 @@ int grasp_independent_set(Graph* graph){
 	}
 	printf("%d\n", tam_list);
 
+	local_search(graph, vertex_list, &tam_list, 2);
+	max = tam_list;
 	return max;
 }
 
-void local_search(Graph* graph, int* original_set, int tam_set, int k){
+void local_search(Graph* graph, int* original_set, int* tam_set, int k){
 	// k-exchange
 
-	short int* admissibles = (short int*) malloc(sizeof(int)*graph->nVertex);	
+	short int* admissibles = (short int*) malloc(sizeof(int)*graph->nVertex);
 
 	for(int i=0 ; i<graph->nVertex ; i++){
 		admissibles[i] = TRUE;
 	}
 	
-	int* aux_set = copy_array(original_set, tam_set);
-	int tam_aux = tam_set;
+	int* aux_set = copy_array(original_set, *tam_set);
+	int tam_aux = *tam_set;
 
-	for(int i=0 ; i<tam_set ; i++){
+	for(int i=0 ; i<*tam_set ; i++){
 
-		for(int j=i ; j<tam_set-1 ; j++){
+		for(int j=i ; j<*tam_set-1 ; j++){
 
-			aux_set = copy_array(original_set, tam_set);
-			tam_aux = tam_set;
+			aux_set = copy_array(original_set, *tam_set);
+			tam_aux = *tam_set;
 
 //			printf("%d - ", aux_set[i]);
 			remove_index(aux_set, tam_aux, i);
@@ -688,8 +720,27 @@ void local_search(Graph* graph, int* original_set, int tam_set, int k){
 				}
 			}
 
-			printf("\n");
-		/* 	for(int o=0 ; o<tam_aux ; o++){
+			int nAdmissibles = 0;
+			update_admissibles(graph, admissibles, aux_set, tam_aux, &nAdmissibles);
+
+			for(int k=0 ; k<graph->nVertex ; k++){
+
+				if(admissibles[k] == TRUE){
+					while(nAdmissibles != 0){
+						aux_set[tam_aux] = admissibles[k];
+						tam_aux++;
+
+						update_admissibles(graph, admissibles, aux_set, tam_aux, &nAdmissibles);
+
+						aux_set[tam_aux] = admissibles[k+1];
+						tam_aux++;
+					}
+				}
+
+			}
+
+		/*	printf("\n");
+		 	for(int o=0 ; o<tam_aux ; o++){
 				printf("%d - ", aux_set[o]);
 			}
 			printf("\n"); */
@@ -737,14 +788,6 @@ void teste(Graph* graph){
 	}
 
 	free(vec);
-
-	printf("\nlocal search\n");
-	vec = (int*) malloc(sizeof(int)*13);
-	for(int i=0 ; i<8 ; i++){
-		vec[i] = i;
-	}
-
-	local_search(graph, vec, 8, 2);
 	
 }
 
@@ -775,7 +818,7 @@ int main(int argc, char** argv){
 		printf("MAX: %d\n", max);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
-//	printf("%f\n", final);
+	printf("%f\n", final);
 
  	 /* for(int i=0 ; i<max ; i++){
 		printf("%d - ", history[i]+1);
