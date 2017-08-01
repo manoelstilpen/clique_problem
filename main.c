@@ -9,7 +9,7 @@
 #include "assert.h"
 #include "time.h"
 
-//#define DEBUG
+#define DEBUG
 #define INF 99999999
 #define TRUE 1
 #define FALSE 0
@@ -36,7 +36,7 @@ int remove_index(int* from, int total, int index) {
 }
 
 int* copy_array(int const* src, int len){
-   int* p = malloc(len * sizeof(int));
+   int* p = (int*) malloc(len * sizeof(int));
    memcpy(p, src, len * sizeof(int));
    return p;
 }
@@ -668,14 +668,31 @@ void local_search(Graph* graph, int* original_set, int tam_set, int k){
 
 	for(int i=0 ; i<tam_set ; i++){
 
-		for(int j=i ; j<tam_set ; j++){
+		for(int j=i ; j<tam_set-1 ; j++){
 
 			aux_set = copy_array(original_set, tam_set);
+			tam_aux = tam_set;
 
-			for(int l=0 ; l<k ; l++){
-				remove_index(aux_set, tam_aux, j);
-				tam_aux--;
+//			printf("%d - ", aux_set[i]);
+			remove_index(aux_set, tam_aux, i);
+			tam_aux--;
+
+			// provavelmente tem uma forma generica pra fazer isso mas nao aguento mais pensar nisso
+			if(k == 2) {
+			// 2-exchange
+
+				for(int l=0 ; l<k-1 ; l++){
+//					printf("%d - ", aux_set[j]);
+					remove_index(aux_set, tam_aux, j);
+					tam_aux--;
+				}
 			}
+
+			printf("\n");
+		/* 	for(int o=0 ; o<tam_aux ; o++){
+				printf("%d - ", aux_set[o]);
+			}
+			printf("\n"); */
 			
 
 			free(aux_set);
@@ -720,6 +737,15 @@ void teste(Graph* graph){
 	}
 
 	free(vec);
+
+	printf("\nlocal search\n");
+	vec = (int*) malloc(sizeof(int)*13);
+	for(int i=0 ; i<8 ; i++){
+		vec[i] = i;
+	}
+
+	local_search(graph, vec, 8, 2);
+	
 }
 
 int main(int argc, char** argv){
