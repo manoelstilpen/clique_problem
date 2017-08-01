@@ -35,6 +35,12 @@ int remove_index(int* from, int total, int index) {
 	return total-1; // return the new array size
 }
 
+int* copy_array(int const* src, int len){
+   int* p = malloc(len * sizeof(int));
+   memcpy(p, src, len * sizeof(int));
+   return p;
+}
+
 void heap_refaz(Graph* graph, int *heap, int esquerda, int direita){
     int i = esquerda; 
     int j = i * 2 + 1; // j = primeiro filho
@@ -448,7 +454,7 @@ int partition (Graph* graph,int arr[], int low, int high)
         // If current element is smaller than or
         // equal to pivot
 //        if (graph->nAdjacencies[arr[j]] >= graph->nAdjacencies[pivot]){
-	    if (arr[j] <= pivot){
+	    if (graph->nAdjacencies[arr[j]] >= graph->nAdjacencies[pivot]){
             i++;    // increment index of smaller  element
             swap(&arr[i], &arr[j]);
         }
@@ -481,6 +487,7 @@ int independent_set(Graph* graph){
 	int max = 0;
 	int* vertex_list;
 	int tam_list;
+	srand(time(NULL));
 
 	for(int k=0 ; k<graph->nVertex ; k++){
 
@@ -492,7 +499,7 @@ int independent_set(Graph* graph){
 		
 		quickSort(graph, vertex_list, 0, tam_list-1);
 //		shuffle(vertex_list, tam_list);
-
+	
 		for(int i=k ; i<tam_list+k ; i++){
 
 			int index;
@@ -526,6 +533,7 @@ int independent_set(Graph* graph){
 
 		if(tam_list > max){
 			max = tam_list;
+			printf("%d %d\n", max, k);
 			/* for(int i=0 ; i<tam_list ; i++){
 				printf("%d - ", vertex_list[i]+1);
 			}
@@ -591,19 +599,14 @@ int grasp_independent_set(Graph* graph){
 		int maior = -INF;
 		tam_candidates = 0;
 		for(int j=0 ; j<graph->nVertex ; j++){
-			int cont = 0;
 			if(admissible[j] == TRUE){
-				for(int k=0 ; k<graph->nVertex ; k++){
-					if(graph->adjacency[j][k] == 1 && admissible[k] == TRUE){
-						cont++;
-					}
-				}
-
 				candidates[tam_candidates] = j;
-				degrees[j] = cont;
+				degrees[j] = graph->nAdjacencies[j];
 				tam_candidates++;
 			}
 		}
+
+		if(tam_candidates == 0) break;
 
 		for(int j=0 ; j<tam_candidates ; j++){
 			if(degrees[candidates[j]] < menor){
@@ -614,17 +617,22 @@ int grasp_independent_set(Graph* graph){
 			}
 		}
 
-		float grasp = menor + 0.5*(maior-menor);
+		float grasp = (1+0.3)*menor;
 
 		int tam_lrc = 0;
 		int* lrc = (int*) malloc(sizeof(int)*tam_candidates);
 
+//		printf("limite %f tam_candi: %d menor:%d\n", grasp, tam_candidates, menor);
 		for(int j=0 ; j<tam_candidates ; j++){
+//			printf("%d - ", degrees[candidates[j]]);
 			if(degrees[candidates[j]] <= grasp){
 				lrc[tam_lrc] = candidates[j];
 				tam_lrc++;
 			}
 		}
+//		printf("\ntam lrc: %d\n", tam_lrc);
+
+		
 
 		if(tam_lrc != 0){
 
@@ -644,6 +652,39 @@ int grasp_independent_set(Graph* graph){
 	printf("%d\n", tam_list);
 
 	return max;
+}
+
+void local_search(Graph* graph, int* original_set, int tam_set, int k){
+	// k-exchange
+
+	short int* admissibles = (short int*) malloc(sizeof(int)*graph->nVertex);	
+
+	for(int i=0 ; i<graph->nVertex ; i++){
+		admissibles[i] = TRUE;
+	}
+	
+	int* aux_set = copy_array(original_set, tam_set);
+	int tam_aux = tam_set;
+
+	for(int i=0 ; i<tam_set ; i++){
+
+		for(int j=i ; j<tam_set ; j++){
+
+			aux_set = copy_array(original_set, tam_set);
+
+			for(int l=0 ; l<k ; l++){
+				remove_index(aux_set, tam_aux, j);
+				tam_aux--;
+			}
+			
+
+			free(aux_set);
+		}
+
+
+
+	}
+
 }
 
 void teste(Graph* graph){
@@ -705,15 +746,15 @@ int main(int argc, char** argv){
 
 		// maximum clique finding
 		int max = grasp_independent_set(&graph);
-//		printf("MAX: %d\n", max);
+		printf("MAX: %d\n", max);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
 //	printf("%f\n", final);
 
- 	 for(int i=0 ; i<max ; i++){
-		printf("%d - ", history[i]);
+ 	 /* for(int i=0 ; i<max ; i++){
+		printf("%d - ", history[i]+1);
 	}
-//	printf("\n");
+	printf("\n"); */
  
 //	complemento(&graph);
  	short int teste = testa_clique(&graph,history,max);
