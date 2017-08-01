@@ -682,25 +682,28 @@ int grasp_independent_set(Graph* graph){
 	printf("%d\n", tam_list);
 
 	local_search(graph, vertex_list, &tam_list, 2);
-	max = tam_list;
+
 	return max;
 }
 
 void local_search(Graph* graph, int* original_set, int* tam_set, int k){
 	// k-exchange
 
+	int* best_solution = original_set;
+	int tam_best = *tam_set;
 	short int* admissibles = (short int*) malloc(sizeof(int)*graph->nVertex);
 
 	for(int i=0 ; i<graph->nVertex ; i++){
 		admissibles[i] = TRUE;
 	}
 	
-	int* aux_set = copy_array(original_set, *tam_set);
+	int* aux_set;
 	int tam_aux = *tam_set;
 
 	for(int i=0 ; i<*tam_set ; i++){
 
 		for(int j=i ; j<*tam_set-1 ; j++){
+			printf("new loop\n");
 
 			aux_set = copy_array(original_set, *tam_set);
 			tam_aux = *tam_set;
@@ -722,37 +725,43 @@ void local_search(Graph* graph, int* original_set, int* tam_set, int k){
 
 			int nAdmissibles = 0;
 			update_admissibles(graph, admissibles, aux_set, tam_aux, &nAdmissibles);
-
-			for(int k=0 ; k<graph->nVertex ; k++){
-
-				if(admissibles[k] == TRUE){
-					while(nAdmissibles != 0){
-						aux_set[tam_aux] = admissibles[k];
-						tam_aux++;
-
-						update_admissibles(graph, admissibles, aux_set, tam_aux, &nAdmissibles);
-
-						aux_set[tam_aux] = admissibles[k+1];
-						tam_aux++;
-					}
+		
+			int index = 0;
+			while(nAdmissibles != 0){
+				printf("pode inserir: %d\n", nAdmissibles);
+				if(admissibles[index] == TRUE){
+					aux_set[tam_aux] = index;
+					tam_aux++;
+					update_admissibles(graph, admissibles, aux_set, tam_aux, &nAdmissibles);
 				}
 
+				index++;
+				if(index > graph->nVertex) index=0;
+			}
+			printf("\n");
+			if(tam_aux > tam_best){
+				// encontrada melhor solucao
+				printf("find best %d\n", tam_aux);
+				best_solution = copy_array(aux_set,tam_aux);
+				tam_best = tam_aux;
 			}
 
-		/*	printf("\n");
+			/* printf("\n");
 		 	for(int o=0 ; o<tam_aux ; o++){
 				printf("%d - ", aux_set[o]);
 			}
-			printf("\n"); */
+			printf("\nTAM: %d\n", tam_aux);  */
 			
 
 			free(aux_set);
 		}
-
-
-
 	}
 
+	original_set = copy_array(best_solution, tam_best);
+	*tam_set = tam_best;
+
+	free(best_solution);
+	free(admissibles);
 }
 
 void teste(Graph* graph){
