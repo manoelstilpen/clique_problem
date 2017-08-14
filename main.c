@@ -34,7 +34,6 @@ void swap(int* a, int* b);
 int partition (Graph* graph,int arr[], int low, int high);
 void quickSort(Graph* graph, int arr[], int low, int high);
 int independent_set(Graph* graph);
-void update_admissibles(Graph* graph, short int* admissibles, int* vertex_list, int tam_list, int* nAdmissibles);
 short int testa_clique(Graph* graph, int* vertex, int tam);
 void teste(Graph* graph);
 
@@ -389,35 +388,6 @@ int independent_set(Graph* graph){
 	return max;
 }
 
-void update_admissibles(Graph* graph, short int* admissibles, int* vertex_list, int tam_list, int* nAdmissibles){
-	// atualiza os vertices que sao admissiveis na atual solucao
-
-	for(int i=0 ; i<graph->nVertex ; i++){
-		for(int j=0 ; j<tam_list ; j++){
-			if(vertex_list[j] == i){
-				admissibles[i] = FALSE;
-
-				for(int k=0 ; k<graph->nVertex ; k++){
-					if(graph->adjacency[i][k] == 1){
-						admissibles[k] = FALSE;
-					}
-				}
-
-				break;
-			}
-		}
-	}
-
-	if(nAdmissibles != NULL){
-		*nAdmissibles = 0;
-		for(int i=0 ; i<graph->nVertex ; i++){
-			if(admissibles[i] == TRUE){
-				(*nAdmissibles)++;
-			}
-		}
-	}
-}
-
 void teste(Graph* graph){
 
 	int* vec = (int*) malloc(sizeof(int)*1000);
@@ -488,9 +458,9 @@ int main(int argc, char** argv){
 	}
 	printf("\n"); */
  
-//	complemento(&graph);
+	// verificacao se o clique obtido é de fato um clique
  	short int teste = testa_clique(&graph,history,max);
-	if(teste == FALSE) printf("DEU MERDA NO CLIQUE\n");
+	if(teste == FALSE) printf("DEU RUIM NO CLIQUE\n");
 
 	exit(EXIT_SUCCESS);
 }
