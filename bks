@@ -45,7 +45,7 @@ Old Algorithm:
         -O2:    14 ~ 0.1 seg
         no-opt: 14 ~ 0.4 seg
 New Algorithm:
-        -O2:    14 ~ 0.0009 seg
+        -O2:    14 ~     seg
 MIS:
                 14 ~ 0.0009 seg
 ================================================        

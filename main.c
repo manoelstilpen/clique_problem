@@ -229,7 +229,7 @@ void new_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 		free(new_list);
 
 		if(*found == TRUE){
-			history[quant_vertex-1] = min_index+1;
+			history[quant_vertex-1] = min_index;
 			return;
 		}
 	}
@@ -258,7 +258,7 @@ int new_algorithm(Graph* graph){
 		new_algorithm_recursive(graph, vertex_list, tam_list, 1, &found, &max);
 
 		if(found == TRUE){
-			history[max-1] = i+1;
+			history[max-1] = i;
 		}
 
 		c[i] = max;
@@ -291,10 +291,12 @@ int partition (Graph* graph,int arr[], int low, int high){
     return (i + 1);
 }
  
-/* The main function that implements QuickSort
- arr[] --> Array to be sorted,
-  low  --> Starting index,
-  high  --> Ending index */
+/*
+The main function that implements QuickSort
+arr[] --> Array to be sorted,
+low  --> Starting index,
+high  --> Ending index
+*/
 void quickSort(Graph* graph, int arr[], int low, int high){
     if (low < high){
         /* pi is partitioning index, arr[p] is now
@@ -349,10 +351,10 @@ int independent_set(Graph* graph){
 
 		if(tam_list > max){
 			max = tam_list;
-			history = vertex_list;
+			history = copy_array(vertex_list, tam_list);
 		}
 
-//		free(vertex_list);
+		free(vertex_list);
 	}
 
 	return max;
@@ -417,7 +419,15 @@ int main(int argc, char** argv){
 	clock_t inicio = clock();
 
 		// maximum clique finding
-		int max = independent_set(&graph);
+		int max = 0;
+		if(graph.nEdge / graph.nVertex < 75.0){
+			printf("Clique\n");
+			max = new_algorithm(&graph);
+		} else {
+			printf("Conjunto Independente\n");
+			max = independent_set(&graph);
+		}
+
 		printf("MAX: %d\n", max);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
