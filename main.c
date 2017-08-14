@@ -25,7 +25,6 @@ int* c;
 
 int remove_index(int* from, int total, int index);
 int* copy_array(int const* src, int len);
-void complemento(Graph* graph);
 short int binary_search(int* vetor, int size, int num);
 int read_instance(char* filename, Graph* graph);
 void new_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int quant_vertex, short int* found, int *max);
@@ -49,26 +48,6 @@ int* copy_array(int const* src, int len){
    int* p = (int*) malloc(len * sizeof(int));
    memcpy(p, src, len * sizeof(int));
    return p;
-}
-
-void complemento(Graph* graph){
-
-	for(int i=0 ; i<graph->nVertex ; i++){
-		graph->nAdjacencies[i] = 0;
-	}
-
-	for(int i=0 ; i<graph->nVertex ; i++){
-		for(int j=0 ; j<graph->nVertex ; j++){
-			if( i != j){
-				if(graph->adjacency[i][j] == 1){
-					graph->adjacency[i][j] = 0;
-				} else {
-					graph->adjacency[i][j] = 1;
-					graph->nAdjacencies[i]++;
-				}
-			}
-		}
-	}
 }
 
 int read_instance(char* filename, Graph* graph){
@@ -288,20 +267,13 @@ int new_algorithm(Graph* graph){
 	return max;
 }
 
-void swap(int* a, int* b)
-{
+void swap(int* a, int* b)	{
     int t = *a;
     *a = *b;
     *b = t;
 }
  
-/* This function takes last element as pivot, places
-   the pivot element at its correct position in sorted
-    array, and places all smaller (smaller than pivot)
-   to left of pivot and all greater elements to right
-   of pivot */
-int partition (Graph* graph,int arr[], int low, int high)
-{
+int partition (Graph* graph,int arr[], int low, int high){
     int pivot = arr[high];   // pivot
     int i = (low - 1);  // Index of smaller element
  
@@ -323,10 +295,8 @@ int partition (Graph* graph,int arr[], int low, int high)
  arr[] --> Array to be sorted,
   low  --> Starting index,
   high  --> Ending index */
-void quickSort(Graph* graph, int arr[], int low, int high)
-{
-    if (low < high)
-    {
+void quickSort(Graph* graph, int arr[], int low, int high){
+    if (low < high){
         /* pi is partitioning index, arr[p] is now
            at right place */
         int pi = partition(graph, arr, low, high);
@@ -453,10 +423,10 @@ int main(int argc, char** argv){
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
 	printf("%f\n", final);
 
- 	 /* for(int i=0 ; i<max ; i++){
+ 	for(int i=0 ; i<max ; i++){
 		printf("%d - ", history[i]+1);
 	}
-	printf("\n"); */
+	printf("\n");
  
 	// verificacao se o clique obtido é de fato um clique
  	short int teste = testa_clique(&graph,history,max);
