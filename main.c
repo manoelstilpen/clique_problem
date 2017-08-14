@@ -36,8 +36,6 @@ void quickSort(Graph* graph, int arr[], int low, int high);
 int independent_set(Graph* graph);
 void update_admissibles(Graph* graph, short int* admissibles, int* vertex_list, int tam_list, int* nAdmissibles);
 short int testa_clique(Graph* graph, int* vertex, int tam);
-int grasp_independent_set(Graph* graph);
-void local_search(Graph* graph, int* original_set, int* tam_set, int k);
 void teste(Graph* graph);
 
 // remove_element(aux,10,7);
@@ -317,6 +315,7 @@ int partition (Graph* graph,int arr[], int low, int high)
             swap(&arr[i], &arr[j]);
         }
     }
+
     swap(&arr[i + 1], &arr[high]);
     return (i + 1);
 }
@@ -419,172 +418,6 @@ void update_admissibles(Graph* graph, short int* admissibles, int* vertex_list, 
 	}
 }
 
-int grasp_independent_set(Graph* graph){
-
-	complemento(graph);
-
-	int max = 0;
-	short int* admissible = (short int*) malloc(sizeof(int)*graph->nVertex);
-	int* vertex_list = (int*) malloc(sizeof(int)*graph->nVertex);
-	int* candidates = (int*) malloc(sizeof(int)*graph->nVertex);
-	int* degrees = (int*) malloc(sizeof(int)*graph->nVertex);
-
-	int tam_candidates = 0;
-	int tam_list = 0;
-
-	srand(time(NULL));
-
-	for(int i=0 ; i<graph->nVertex ; i++){
-		admissible[i] = TRUE;
-		candidates[i] = graph->nAdjacencies[i];
-		degrees[i] = graph->nAdjacencies[i];
-		vertex_list[i] = i;
-	}
-
-//	quickSort(graph, vertex_list, 0, tam_list-1);
-
-	for(int i=0 ; i<graph->nVertex ; i++){
-
-		update_admissibles(graph, admissible, vertex_list, tam_list, NULL);
-
-		int menor = INF;
-		int maior = -INF;
-		tam_candidates = 0;
-		for(int j=0 ; j<graph->nVertex ; j++){
-			if(admissible[j] == TRUE){
-				candidates[tam_candidates] = j;
-				degrees[j] = graph->nAdjacencies[j];
-				tam_candidates++;
-			}
-		}
-
-		if(tam_candidates == 0) break;
-
-		for(int j=0 ; j<tam_candidates ; j++){
-			if(degrees[candidates[j]] < menor){
-				menor = degrees[candidates[j]];
-			}
-			if(degrees[candidates[j]] > maior){
-				maior = degrees[candidates[j]];
-			}
-		}
-
-		float grasp = (1+0.3)*menor;
-
-		int tam_lrc = 0;
-		int* lrc = (int*) malloc(sizeof(int)*tam_candidates);
-
-//		printf("limite %f tam_candi: %d menor:%d\n", grasp, tam_candidates, menor);
-		for(int j=0 ; j<tam_candidates ; j++){
-//			printf("%d - ", degrees[candidates[j]]);
-			if(degrees[candidates[j]] <= grasp){
-				lrc[tam_lrc] = candidates[j];
-				tam_lrc++;
-			}
-		}
-//		printf("\ntam lrc: %d\n", tam_lrc);
-
-		if(tam_lrc != 0){
-
-			int a = rand() % tam_lrc;
-//			printf("%d %d\n", a, tam_lrc);
-			vertex_list[tam_list] = lrc[a];
-			tam_list++;
-		}
-
-		free(lrc);
-	}
-
-	
-//	printf("\n\n");
-	for(int i=0 ; i<tam_list ; i++){
-//		printf("%d - ", vertex_list[i]+1);
-	}
-	printf("%d\n", tam_list);
-
-	local_search(graph, vertex_list, &tam_list, 2);
-
-	return max;
-}
-
-void local_search(Graph* graph, int* original_set, int* tam_set, int k){
-	// k-exchange
-
-	int* best_solution = original_set;
-	int tam_best = *tam_set;
-	short int* admissibles = (short int*) malloc(sizeof(int)*graph->nVertex);
-
-	for(int i=0 ; i<graph->nVertex ; i++){
-		admissibles[i] = TRUE;
-	}
-	
-	int* aux_set;
-	int tam_aux = *tam_set;
-
-	for(int i=0 ; i<*tam_set ; i++){
-
-		for(int j=i ; j<*tam_set-1 ; j++){
-			printf("new loop\n");
-
-			aux_set = copy_array(original_set, *tam_set);
-			tam_aux = *tam_set;
-
-//			printf("%d - ", aux_set[i]);
-			remove_index(aux_set, tam_aux, i);
-			tam_aux--;
-
-			// provavelmente tem uma forma generica pra fazer isso mas nao aguento mais pensar nisso
-			if(k == 2) {
-			// 2-exchange
-
-				for(int l=0 ; l<k-1 ; l++){
-//					printf("%d - ", aux_set[j]);
-					remove_index(aux_set, tam_aux, j);
-					tam_aux--;
-				}
-			}
-
-			int nAdmissibles = 0;
-			update_admissibles(graph, admissibles, aux_set, tam_aux, &nAdmissibles);
-		
-			int index = 0;
-			while(nAdmissibles != 0){
-				printf("pode inserir: %d\n", nAdmissibles);
-				if(admissibles[index] == TRUE){
-					aux_set[tam_aux] = index;
-					tam_aux++;
-					update_admissibles(graph, admissibles, aux_set, tam_aux, &nAdmissibles);
-				}
-
-				index++;
-				if(index > graph->nVertex) index=0;
-			}
-			printf("\n");
-			if(tam_aux > tam_best){
-				// encontrada melhor solucao
-				printf("find best %d\n", tam_aux);
-				best_solution = copy_array(aux_set,tam_aux);
-				tam_best = tam_aux;
-			}
-
-			/* printf("\n");
-		 	for(int o=0 ; o<tam_aux ; o++){
-				printf("%d - ", aux_set[o]);
-			}
-			printf("\nTAM: %d\n", tam_aux);  */
-			
-
-			free(aux_set);
-		}
-	}
-
-	original_set = copy_array(best_solution, tam_best);
-	*tam_set = tam_best;
-
-	free(best_solution);
-	free(admissibles);
-}
-
 void teste(Graph* graph){
 
 	int* vec = (int*) malloc(sizeof(int)*1000);
@@ -644,7 +477,7 @@ int main(int argc, char** argv){
 	clock_t inicio = clock();
 
 		// maximum clique finding
-		int max = grasp_independent_set(&graph);
+		int max = independent_set(&graph);
 		printf("MAX: %d\n", max);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
