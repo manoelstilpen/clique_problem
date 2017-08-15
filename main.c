@@ -421,26 +421,27 @@ int main(int argc, char** argv){
 		// maximum clique finding
 		int max = 0;
 		if(graph.nEdge / graph.nVertex < 75.0){
-			printf("Clique\n");
+//			printf("Clique\n");
 			max = new_algorithm(&graph);
 		} else {
-			printf("Conjunto Independente\n");
+//			printf("Conjunto Independente\n");
 			max = independent_set(&graph);
 		}
 
 		printf("MAX: %d\n", max);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
-	printf("%f\n", final);
+//	printf("TEMPO: %f\n", final);
 
  	for(int i=0 ; i<max ; i++){
 		printf("%d - ", history[i]+1);
 	}
 	printf("\n");
  
+ /*
 	// verificacao se o clique obtido é de fato um clique
  	short int teste = testa_clique(&graph,history,max);
 	if(teste == FALSE) printf("DEU RUIM NO CLIQUE\n");
-
+*/
 	exit(EXIT_SUCCESS);
 }
