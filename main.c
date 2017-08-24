@@ -256,7 +256,6 @@ void new_algorithm_recursive(Graph* graph, int* vertex_list, int tam_list, int q
 			return;
 		} 
 
-		// remove da lista o vertice com a menor quantidade de adjacencias
 		remove_index(vertex_list, tam_list, min_index_vertex_list);
 		tam_list--;
 
@@ -440,7 +439,7 @@ int main(int argc, char** argv){
 		printf("MAX: %d\n", max);
 
 	double final = (double) (clock() - inicio)/CLOCKS_PER_SEC;
-//	printf("TEMPO: %f\n", final);
+	printf("TEMPO: %f\n", final);
 
  	for(int i=0 ; i<max ; i++){
 		printf("%d - ", history[i]+1);
