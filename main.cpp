@@ -1,11 +1,13 @@
 #include <cstdlib>
 #include <iostream>
+#include <chrono>
 #include <boost/program_options.hpp>
 
 #include "Graph.hpp"
 #include "Clique.hpp"
 
 using namespace std;
+using namespace std::chrono;
 namespace po = boost::program_options;
 
 void show_help(const po::options_description& desc, const std::string& topic = ""){
@@ -64,9 +66,16 @@ int main(int argc, char** argv){
     }
 
     Graph graph(path);
-    Clique clique(graph);
-    
+
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
+        Clique clique(graph);
+
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    duration<double> time_span = duration_cast<duration<double> >(t2 - t1);
+
     cout << clique.searchLargestClique() << endl;
+    cout << time_span.count() << endl;
 
     return 0;
 }

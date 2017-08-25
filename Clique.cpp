@@ -10,13 +10,18 @@ Clique::Clique(Graph _graph){
 
 int Clique::searchLargestClique(){
 
-	if(!definedGraph) cerr << "THERE'S NO GRAPH" << endl;
+	if(!definedGraph){
+		cerr << "THERE'S NO GRAPH" << endl;
+		return 0;
+	} 
 
     bool found = false;
 	int max = 0;
     
-    vector<int> vertex_list(0);
+	vector<int> vertex_list(0);
+	
     c.resize(graph.getNVertex());
+	largestClique.resize(graph.getNVertex());
 
 	for(int i=graph.getNVertex()-1 ; i>=0 ; i--){
 		vertex_list.clear();
@@ -26,16 +31,18 @@ int Clique::searchLargestClique(){
 			if(graph[i][j] == 1){
 				vertex_list.push_back(j);
 			}
-        }
+		}
 
 		cliqueRecursive(vertex_list, 1, &found, &max);
 
 		if(found == true){
-			largestClique.push_back(i);
+			largestClique[max-1] = i;
 		}
 
 		c[i] = max;
 	}
+
+	largestClique.erase(largestClique.end()-(graph.getNVertex()-max), largestClique.end());
 
 	for(int i=0 ; i<largestClique.size() ; i++){
 		cout << largestClique[i] << " ";
@@ -46,6 +53,11 @@ int Clique::searchLargestClique(){
 }
 
 void Clique::cliqueRecursive(vector<int> vertex_list, int size, bool* found, int* max){
+
+/* 	for(int i=0 ; i<vertex_list.size() ; i++){
+		cout << vertex_list[i] << " ";
+	}
+	cout << endl; */
 
 	if(vertex_list.size() == 0){
 		
@@ -73,14 +85,21 @@ void Clique::cliqueRecursive(vector<int> vertex_list, int size, bool* found, int
 		// remove first element
 		vertex_list.erase(vertex_list.begin());
 		
-		// vector U sent to recursive call
-		vector<int> new_list(vertex_list.size());
-		// intersection between sets
-		auto it = set_intersection (vertex_list.begin(), vertex_list.end(), graph.getNeighborsOf(min_index), graph.getNeighborsReverseOf(min_index), new_list.begin());
-		new_list.resize(it-new_list.begin());  
+		{
+			// vector U sent to recursive call
+			vector<int> new_list(vertex_list.size());
+			// intersection between sets
+			/* cout << "intersec" << endl;
+			for(auto i=graph.getNeighborsOf(min_index) ; i != graph.getNeighborsReverseOf(min_index) ; i++){
+				cout << *i << " ";
+			} 
+			cout << endl;*/
+			auto it = set_intersection (vertex_list.begin(), vertex_list.end(), graph.getNeighborsOf(min_index), graph.getNeighborsReverseOf(min_index), new_list.begin());
+			new_list.resize(it-new_list.begin());  
 
-		// recursive call
-		cliqueRecursive(new_list, size+1, found, max);
+			// recursive call
+			cliqueRecursive(new_list, size+1, found, max);
+		}
 
 		if(*found == true){
 			largestClique[size-1] = min_index;

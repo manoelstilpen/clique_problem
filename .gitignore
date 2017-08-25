@@ -1,3 +1,5 @@
 *.out
 *.json
 *.pdf
+*.o
+clique

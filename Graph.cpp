@@ -44,8 +44,13 @@ void Graph::loadGraph(string filePath){
         neighbors[src-1].push_back(target-1);
         neighbors[target-1].push_back(src-1);
     }
-
+    
+    for(int i=0 ; i<nVertex ; i++){
+        sort(neighbors[i].begin(), neighbors[i].end());
+    }
+    
     file.close();
+
 }
 
 void Graph::generateComplement(){
