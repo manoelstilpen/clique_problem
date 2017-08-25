@@ -1,10 +1,16 @@
 #include "Clique.hpp"
 
 Clique::Clique(){
+	definedGraph = false;
+}
 
+Clique::Clique(Graph _graph){
+	setGraph(_graph);
 }
 
 int Clique::searchLargestClique(){
+
+	if(!definedGraph) cerr << "THERE'S NO GRAPH" << endl;
 
     bool found = false;
 	int max = 0;
@@ -31,13 +37,64 @@ int Clique::searchLargestClique(){
 		c[i] = max;
 	}
 
+	for(int i=0 ; i<largestClique.size() ; i++){
+		cout << largestClique[i] << " ";
+	}
+	cout << endl;
+
 	return max;
 }
 
 void Clique::cliqueRecursive(vector<int> vertex_list, int size, bool* found, int* max){
 
+	if(vertex_list.size() == 0){
+		
+		// bigger clique was found
+		if(size > *max){
+			*max = size;
+			*found = true;
+		}
+		return;
+	}
+
+	while(vertex_list.size() != 0){
+		
+		// if size + vertex_list size is smaller than max there is no bigger clique
+		if(size + vertex_list.size() <= *max){
+			return;
+		}
+
+		int min_index = vertex_list[0];
+		
+		if(size + c[min_index] <= *max){	
+			return;
+		} 
+
+		// remove first element
+		vertex_list.erase(vertex_list.begin());
+		
+		// vector U sent to recursive call
+		vector<int> new_list(vertex_list.size());
+		// intersection between sets
+		auto it = set_intersection (vertex_list.begin(), vertex_list.end(), graph.getNeighborsOf(min_index), graph.getNeighborsReverseOf(min_index), new_list.begin());
+		new_list.resize(it-new_list.begin());  
+
+		// recursive call
+		cliqueRecursive(new_list, size+1, found, max);
+
+		if(*found == true){
+			largestClique[size-1] = min_index;
+			return;
+		}
+	} 
+
 }
 
-vector<int> Clique::getLargestClique(){
-    return largestClique;
+vector<int>::iterator Clique::getLargestClique(){
+    return largestClique.begin();
+}
+
+void Clique::setGraph(Graph _graph){
+	graph = _graph;
+	definedGraph = true;
 }

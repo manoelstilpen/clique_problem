@@ -16,14 +16,19 @@ private:
     vector<int> largestClique;
     vector<int> c;
 
+    bool definedGraph;
+
     void cliqueRecursive(vector<int> vertex_list, int size, bool* found, int* max);
     
 public:
     Clique();
+    Clique(Graph);
 
     int searchLargestClique();
 
-    vector<int> getLargestClique();
+    vector<int>::iterator getLargestClique();
+
+    void setGraph(Graph);
 
 };
 

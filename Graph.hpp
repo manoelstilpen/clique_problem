@@ -15,9 +15,11 @@ private:
 
     vector<int> nAdjacencies; // number of adjacencies per vertex
     vector< vector<char> > adjacency; // adjacency matrix
+    vector< vector<int> > neighbors;
 
 public:
     Graph();
+    Graph(string);
 
     vector<char> operator[](const int& i){
         return (adjacency[i]);
@@ -31,6 +33,8 @@ public:
     int getNEdge();
 
     int getNAdjacencyOf(int);
+    vector<int>::iterator getNeighborsOf(int);
+    vector<int>::iterator getNeighborsReverseOf(int);
 
 };
 
