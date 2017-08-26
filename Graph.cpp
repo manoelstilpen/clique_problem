@@ -23,6 +23,8 @@ void Graph::loadGraph(string filePath){
     file >> nVertex;
     file >> nEdge;
 
+//    cout << nVertex << " " << nEdge << endl;
+
     // initializing vectors
     nAdjacencies.assign(nVertex, 0);
     adjacency.resize(nVertex);
@@ -33,10 +35,11 @@ void Graph::loadGraph(string filePath){
 
     // reading edges from file
     int src, target;
+    char ignore;
     for(int i=0 ; i<nEdge ; i++){
-        file.ignore(2,' '); // ignore "p" from line
+        file >> ignore; // ignore "p" from line
         file >> src; file >> target;
-
+        
         adjacency[src-1][target-1] = 1;
 		adjacency[target-1][src-1] = 1;
 		nAdjacencies[src-1]++;
@@ -48,7 +51,7 @@ void Graph::loadGraph(string filePath){
     for(int i=0 ; i<nVertex ; i++){
         sort(neighbors[i].begin(), neighbors[i].end());
     }
-    
+
     file.close();
 
 }

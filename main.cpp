@@ -18,7 +18,7 @@ void show_help(const po::options_description& desc, const std::string& topic = "
     exit( EXIT_SUCCESS );
 }
 
-bool argParse(int argc, char* argv[], string* method, string* path){
+bool argParse(int argc, char* argv[], string* method, string* path, bool* printClique){
     po::options_description desc("Usage");
     desc.add_options()
         ("help,h", po::value< std::string >()->implicit_value("")->notifier(
@@ -27,7 +27,8 @@ bool argParse(int argc, char* argv[], string* method, string* path){
             }
         ),"Show help.")
         ("instance,i", po::value<string>(), "Instance path")
-        ("method,m", po::value<string>()->default_value("auto"), "(Optional) Specify to method to use, may be <auto>, <mis> or <clique>");
+        ("method,m", po::value<string>()->default_value("auto"), "(Optional) Specify to method to use, may be <auto>, <mis> or <clique>")
+        ("print,p", "(Optional) If enabled program will print all vertex in maximum clique");
 
     if (argc == 1) {
         show_help(desc);
@@ -46,6 +47,10 @@ bool argParse(int argc, char* argv[], string* method, string* path){
 
     *method = args["method"].as<string>();
 
+    if(args.count("print")){
+        *printClique = true;
+    }
+
     if(args.count("instance")){
         *path = args["instance"].as<string>();
     } else {
@@ -60,8 +65,9 @@ bool argParse(int argc, char* argv[], string* method, string* path){
 int main(int argc, char** argv){
     string method = "";
     string path = "";
+    bool printClique = false;
 
-    if(!argParse(argc, argv, &method, &path)){
+    if(!argParse(argc, argv, &method, &path, &printClique)){
         return 1;
     }
 
@@ -70,12 +76,20 @@ int main(int argc, char** argv){
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
         Clique clique(graph);
-        cout << clique.searchLargestClique() << endl;
-
+        int max = clique.searchLargestClique();
+        
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     duration<double> time_span = duration_cast<duration<double> >(t2 - t1);
+        
+    cout << max << "\t" << time_span.count() << endl;
 
-    cout << time_span.count() << endl;
+    if(printClique){
+        auto it = clique.getLargestCliqueBegin();
+        for(;it != clique.getLargestCliqueEnd() ; it++){
+            cout << *it << " ";
+        }
+        cout << endl;
+    } 
 
     return 0;
 }

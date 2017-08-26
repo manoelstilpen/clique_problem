@@ -26,7 +26,8 @@ public:
 
     int searchLargestClique();
 
-    vector<int>::iterator getLargestClique();
+    vector<int>::iterator getLargestCliqueBegin();
+    vector<int>::iterator getLargestCliqueEnd();
 
     void setGraph(Graph);
 

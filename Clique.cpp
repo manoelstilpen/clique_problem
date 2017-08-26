@@ -44,11 +44,6 @@ int Clique::searchLargestClique(){
 
 	largestClique.erase(largestClique.end()-(graph.getNVertex()-max), largestClique.end());
 
-	for(int i=0 ; i<largestClique.size() ; i++){
-		cout << largestClique[i] << " ";
-	}
-	cout << endl;
-
 	return max;
 }
 
@@ -109,8 +104,12 @@ void Clique::cliqueRecursive(vector<int> vertex_list, int size, bool* found, int
 
 }
 
-vector<int>::iterator Clique::getLargestClique(){
+vector<int>::iterator Clique::getLargestCliqueBegin(){
     return largestClique.begin();
+}
+
+vector<int>::iterator Clique::getLargestCliqueEnd(){
+    return largestClique.end();
 }
 
 void Clique::setGraph(Graph _graph){
