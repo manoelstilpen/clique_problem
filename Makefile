@@ -1,4 +1,4 @@
-COMPILER = g++ --std=c++11 -Wall -g
+COMPILER = g++ --std=c++11 -Wall -g -O2
 LIBRARIES_BOOST = -lboost_system -lboost_filesystem -lboost_program_options
 EXEC_PROG = clique
 BINARIES = $(EXEC_PROG)
