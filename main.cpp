@@ -5,6 +5,7 @@
 
 #include "Graph.hpp"
 #include "Clique.hpp"
+#include "IndependentSet.hpp"
 
 using namespace std;
 using namespace std::chrono;
@@ -76,7 +77,9 @@ int main(int argc, char** argv){
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
         Clique clique(graph);
-        int max = clique.searchLargestClique();
+        //int max = clique.searchLargestClique();
+        IndependentSet is(graph);
+        int max = is.searchLargestIndependentSet();
         
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     duration<double> time_span = duration_cast<duration<double> >(t2 - t1);
